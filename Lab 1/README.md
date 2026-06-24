@@ -2,290 +2,157 @@
 
 ## Objective
 
-* Set up and configure the VHDL development environment using **VS Code**, **GHDL**, and **GTKWave**.
-* Understand the fundamental structure and components of a VHDL design.
-* Write, simulate, and visualize a basic VHDL program.
+The objective of this lab is to set up and use an open-source VHDL development environment for writing, simulating, and verifying a basic VHDL program.
+
+This lab helps to:
+
+* Understand the basic structure of a VHDL program
+* Learn the use of entity and architecture in VHDL
+* Write a simple VHDL design file
+* Create a testbench for simulation
+* Generate a waveform file using GHDL
+* View and verify the output using GTKWave
 
 ---
 
-# Theory
+## Files Included
 
-## Introduction to VHDL
-
-VHDL (VHSIC Hardware Description Language) is an IEEE-standard hardware description language used to model digital systems at different abstraction levels, ranging from algorithmic descriptions to gate-level implementations.
-
-Unlike conventional programming languages, VHDL models hardware behavior concurrently, meaning multiple operations can occur simultaneously, similar to real digital circuits.
-
----
-
-# VHDL Structure
-
-A VHDL design typically consists of three main components:
-
-1. **Libraries and Packages**
-2. **Entity**
-3. **Architecture**
+| File Name        | Description              |
+| ---------------- | ------------------------ |
+| `buffer.vhd`     | VHDL design file         |
+| `buffer_tb.vhd`  | VHDL testbench file      |
+| `simulation.vcd` | Simulation waveform file |
+| `lab1.png`       | Output screenshot/image  |
+| `README.md`      | Final lab report         |
 
 ---
 
-## 1. Libraries and Packages
+## Theory
 
-Libraries contain predefined data types, constants, and functions.
+VHDL stands for **VHSIC Hardware Description Language**. It is a hardware description language used to describe and model digital circuits.
 
-### Commonly Used Libraries
+Unlike normal programming languages, VHDL describes hardware behavior. In digital hardware, many operations can happen at the same time. Because of this, VHDL supports concurrent execution, which means multiple signals and processes can work simultaneously.
 
-### `std` Library
+A basic VHDL program usually contains the following parts:
 
-Automatically included in every VHDL design.
-
-Provides basic data types such as:
-
-* `bit`
-* `integer`
-* `boolean`
-* `character`
-
-### `IEEE` Library
-
-Provides standard logic types used in hardware design.
-
-```vhdl
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
-```
-
-* `STD_LOGIC_1164` provides `std_logic` and `std_logic_vector`
-* `NUMERIC_STD` provides arithmetic operations
+1. Library declaration
+2. Entity declaration
+3. Architecture body
 
 ---
 
-# Entity
+### Library Declaration
 
-The **entity** defines the external interface of a circuit.
-
-It specifies:
-
-* Input ports
-* Output ports
-* Signal directions
-* Data types
-
-## General Syntax
-
-```vhdl
-entity <entity_name> is
-    port (
-        <port_name> : <direction> <data_type>;
-        <port_name> : <direction> <data_type>
-    );
-end entity <entity_name>;
-```
-
-## Port Directions
-
-| Direction | Description          |
-| --------- | -------------------- |
-| `in`      | Input signal         |
-| `out`     | Output signal        |
-| `inout`   | Bidirectional signal |
-
-## Example: 2-Input AND Gate Entity
-
-```vhdl
-entity AND_GATE is
-    port (
-        A : in std_logic;
-        B : in std_logic;
-        Y : out std_logic
-    );
-end entity AND_GATE;
-```
-
----
-
-# Architecture
-
-The **architecture** defines the internal behavior of the entity.
-
-## General Syntax
-
-```vhdl
-architecture <arch_name> of <entity_name> is
-    -- Internal declarations
-begin
-    -- Logic description
-end architecture <arch_name>;
-```
-
-## Example: AND Gate Architecture
-
-```vhdl
-architecture Behavioral of AND_GATE is
-begin
-    Y <= A and B;
-end architecture Behavioral;
-```
-
-The statement:
-
-```vhdl
-Y <= A and B;
-```
-
-is a **concurrent signal assignment**, meaning it continuously monitors the inputs and updates the output whenever changes occur.
-
----
-
-# Types of Architectural Models
-
-## 1. Behavioral Model
-
-Describes circuit behavior using sequential statements inside a `process` block.
-
-```vhdl
-architecture Behavioral of AND_GATE is
-begin
-    process(A, B)
-    begin
-        Y <= A and B;
-    end process;
-end architecture Behavioral;
-```
-
----
-
-## 2. Dataflow Model
-
-Uses concurrent signal assignments.
-
-```vhdl
-architecture Dataflow of AND_GATE is
-begin
-    Y <= A and B;
-end architecture Dataflow;
-```
-
----
-
-## 3. Structural Model
-
-Builds circuits using interconnected components.
-
-```vhdl
-architecture Structural of AND_GATE is
-
-    component AND2
-        port (
-            X, Z : in std_logic;
-            W    : out std_logic
-        );
-    end component;
-
-begin
-
-    U1 : AND2
-        port map (
-            X => A,
-            Z => B,
-            W => Y
-        );
-
-end architecture Structural;
-```
-
----
-
-# Basic Data Types and Signals
-
-## `std_logic`
-
-Represents a single-bit signal.
-
-Possible values include:
-
-* `'0'`
-* `'1'`
-* `'Z'` (High Impedance)
-* `'U'` (Uninitialized)
-
----
-
-## `std_logic_vector`
-
-Represents multiple bits (a bus).
+Libraries provide predefined data types and functions required in VHDL programs.
 
 Example:
 
 ```vhdl
-std_logic_vector(7 downto 0)
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
 ```
 
-Represents an 8-bit bus.
+The `STD_LOGIC_1164` package provides the `std_logic` data type, which is commonly used to represent digital signals.
 
 ---
 
-## Signals
+### Entity
 
-Signals act as internal wires within an architecture.
+The entity defines the external interface of the circuit. It contains the input and output ports.
+
+Example:
 
 ```vhdl
-architecture Behavioral of MY_CIRCUIT is
+entity buffer_gate is
+    port (
+        A : in std_logic;
+        Y : out std_logic
+    );
+end buffer_gate;
+```
 
-    signal internal_wire : std_logic;
-    signal data_bus : std_logic_vector(7 downto 0);
+Here:
 
+* `A` is the input signal
+* `Y` is the output signal
+* `std_logic` represents a single digital signal
+
+---
+
+### Architecture
+
+The architecture defines the internal working or behavior of the circuit.
+
+Example:
+
+```vhdl
+architecture Behavioral of buffer_gate is
 begin
+    Y <= A;
+end Behavioral;
+```
 
-end architecture Behavioral;
+In this example, the output `Y` follows the input `A`. This represents the behavior of a buffer circuit.
+
+---
+
+## Simulation Process
+
+The VHDL design was simulated using **GHDL**, and the waveform output was viewed using **GTKWave**.
+
+The general simulation steps are:
+
+1. Analyze the design file
+2. Analyze the testbench file
+3. Elaborate the testbench
+4. Run the simulation
+5. Generate the `.vcd` waveform file
+6. Open the waveform file in GTKWave
+
+---
+
+## Commands Used
+
+```bash
+ghdl -a buffer.vhd
+ghdl -a buffer_tb.vhd
+ghdl -e buffer_tb
+ghdl -r buffer_tb --vcd=simulation.vcd
+gtkwave simulation.vcd
 ```
 
 ---
 
-# VHDL Design Cycle
+## Output
 
-The simulation workflow includes the following stages:
+The output waveform generated from the simulation is shown below:
 
-## 1. Analysis (Compilation)
+![Lab 1 Simulation Output](lab1.png)
 
-* Checks syntax errors
-* Verifies language rules
-
-## 2. Elaboration
-
-* Binds entities and architectures
-* Connects signals
-
-## 3. Simulation
-
-* Applies input stimuli
-* Verifies circuit behavior over time
-
-## 4. Visual Verification
-
-* GTKWave reads generated `.vcd` files
-* Displays timing diagrams
+The screenshot shows the signal behavior of the VHDL design during simulation. The waveform verifies that the output changes according to the applied input signal.
 
 ---
 
-# Discussion
+## Discussion
 
-The primary objective of this experiment was to design and simulate a digital system using VHDL within an open-source environment.
+In this lab, a basic VHDL program was written and simulated using open-source tools. The design file described the actual digital circuit, while the testbench was used to apply input values and check the output behavior.
 
-The transition from conceptual logic diagrams to hardware description demonstrated the concurrent nature of VHDL. Unlike sequential software programming, VHDL models signal propagation simultaneously, closely matching real hardware behavior.
+The simulation result was generated in the form of a `.vcd` file. This file was opened in GTKWave to observe the signal changes visually. By checking the waveform, the correctness of the circuit was verified.
 
-The generated timing diagrams in GTKWave verified the correct operation of the designed circuit.
-
----
-
-# Conclusion
-
-This lab successfully demonstrated the workflow of digital design using VHDL and the open-source toolchain consisting of:
-
-* VS Code
-* GHDL
-* GTKWave
-
-The experiment provided practical experience in writing, compiling, simulating, and visualizing VHDL designs while reinforcing the concepts of concurrent hardware modeling.
+This lab also helped in understanding the difference between software programming and hardware description. In VHDL, statements describe hardware behavior and can operate concurrently, similar to real digital circuits.
 
 ---
+
+## Conclusion
+
+This lab successfully demonstrated the basic workflow of VHDL programming and simulation.
+
+From this lab, I learned how to:
+
+* Write a simple VHDL design
+* Create and use a testbench
+* Compile and simulate VHDL code using GHDL
+* Generate a waveform file
+* View the output waveform using GTKWave
+
+Overall, this lab provided a strong foundation for future VHDL-based digital design experiments.
