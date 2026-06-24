@@ -62,7 +62,7 @@ The objectives of this repository are:
 ## Repository Structure
 
 ```text
-Computer-Architecture-Lab/
+CA_LAB/
 ├── README.md
 ├── Lab1/
 │   ├── README.md
