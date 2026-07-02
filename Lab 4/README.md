@@ -152,6 +152,9 @@ The simulation waveform generated using GTKWave is shown below:
 
 ![Lab 4 Simulation Output](image.png)
 
+![Lab 4 Simulation Output](demux.png)
+
+
 The waveform shows the input, select lines, and output behavior of the multiplexer and demultiplexer circuits.
 
 ---
